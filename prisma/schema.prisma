@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// generator erd {
+//   provider  = "prisma-erd-generator"
+//   output    = "../ERD.svg"
+//   ERD_DEBUG = true
+// }
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model copies {
+  id            String      @id @default(uuid())
+  nCopies       Int
+  created_at    DateTime    @default(now())
+  departmentsId String
+  deapartments  departments @relation(fields: [departmentsId], references: [id])
+}
+
+model departments {
+  id            String   @id @default(uuid())
+  code          Int      @unique
+  name          String   @unique
+  corporateName String   @default("")
+  active        Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+  copies        copies[]
+}
