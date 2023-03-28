@@ -37,7 +37,7 @@ type CreateCopiesFormInputs = z.infer<typeof CreateCopiesFormSchema>
 
 interface Copie {
   id: string
-  sector: string
+  departmentsId: string
   nCopies: number
   created_at: Date
 }
@@ -45,8 +45,8 @@ interface Copie {
 interface Department {
   id: string
   code: number
-  name: String
-  corporateName: String
+  name: string
+  corporateName: string
   active: boolean
   created_at: Date
   updated_at: Date
