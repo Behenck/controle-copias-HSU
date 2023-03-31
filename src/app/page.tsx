@@ -1,11 +1,9 @@
 'use client'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { Header } from '@/components/Header'
-import { FileXls, PlusCircle, TrashSimple } from 'phosphor-react'
+import { Buildings, FileXls, PlusCircle, TrashSimple } from 'phosphor-react'
 import {
   Box,
   Button,
-  Container,
   Counter,
   Created,
   Done,
@@ -22,25 +20,19 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { api } from '@/services/api'
-import { toast, Toaster } from 'react-hot-toast'
+import { toast } from 'react-hot-toast'
 // import { Pagination } from '@/components/Pagination'
 import { format } from 'date-fns'
-import { AlertDialogDeleteCopie } from '@/components/AlertDialogDeleteCopie'
+import { AlertDialogDelete } from '@/components/AlertDialogDelete'
 import { Report } from '@/components/report'
+import Link from 'next/link'
 
 const CreateCopiesFormSchema = z.object({
   nCopies: z.string(),
-  sector: z.string(),
+  departmentId: z.string(),
 })
 
 type CreateCopiesFormInputs = z.infer<typeof CreateCopiesFormSchema>
-
-interface Copie {
-  id: string
-  departmentsId: string
-  nCopies: number
-  created_at: Date
-}
 
 interface Department {
   id: string
@@ -50,6 +42,14 @@ interface Department {
   active: boolean
   created_at: Date
   updated_at: Date
+}
+
+interface Copie {
+  id: string
+  departmentsId: string
+  nCopies: number
+  departments: Department
+  created_at: Date
 }
 
 interface Response {
@@ -83,12 +83,12 @@ export default function Home() {
   }, [])
 
   async function handleCreateNewCopie(data: CreateCopiesFormInputs) {
-    const { nCopies, sector } = data
+    const { nCopies, departmentId } = data
 
     try {
       await api.post('/CreateNewCopie', {
         nCopies,
-        sector,
+        departmentId,
       })
 
       toast.success('Cópias criada com sucesso!')
@@ -97,7 +97,7 @@ export default function Home() {
       fetchCopies()
     } catch (err) {
       console.log(err)
-      toast.success('Erro avise o suporte!')
+      toast.error('Erro avise o suporte!')
     }
   }
 
@@ -110,93 +110,107 @@ export default function Home() {
   }
 
   async function fetchDepartments() {
-    const response = await api.get('/GetAllDepartments')
+    const response = await api.post('/GetAllDepartments', { active: true })
 
-    setDepartments(response.data)
+    setDepartments(response.data.departments)
   }
 
   return (
     <>
-      <Header />
+      <NewTask onSubmit={handleSubmit(handleCreateNewCopie)}>
+        <Select {...register('departmentId')}>
+          <option value="0" disabled selected>
+            -- Selecione --
+          </option>
+          {departments.map((department, key) => {
+            return (
+              <option key={key} value={department.id}>
+                {department.corporateName
+                  ? department.corporateName
+                  : department.name}
+              </option>
+            )
+          })}
+        </Select>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <input
+              type="text"
+              placeholder="Nº cópias"
+              required
+              value={numberOfCopies}
+              {...register('nCopies')}
+            />
+          </DropdownMenu.Trigger>
+          <Keyboard onSetNumberOfCopies={onSetNumberOfCopies} />
+        </DropdownMenu.Root>
 
-      <Container>
-        <NewTask onSubmit={handleSubmit(handleCreateNewCopie)}>
-          <Select {...register('sector')}>
-            {departments.map((department, key) => {
-              return <option key={key}>{department.name}</option>
-            })}
-          </Select>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <input
-                type="text"
-                placeholder="Nº cópias"
-                required
-                value={numberOfCopies}
-                {...register('nCopies')}
-              />
-            </DropdownMenu.Trigger>
-            <Keyboard onSetNumberOfCopies={onSetNumberOfCopies} />
-          </DropdownMenu.Root>
+        <Button>
+          Criar
+          <PlusCircle size={20} />
+        </Button>
+      </NewTask>
 
-          <Button>
-            Criar
-            <PlusCircle size={20} />
-          </Button>
-        </NewTask>
-
-        <Tasks>
-          <Info>
-            <Created>
-              <p>Cópias no Mês</p>
-              <Counter>{totalCopiesToMonth}</Counter>
-            </Created>
-            <Done>
-              <p>Cópia no dia</p>
-              <Counter>{totalCopiesToDay}</Counter>
+      <Tasks>
+        <Info>
+          <Created>
+            <p>Cópias no Mês</p>
+            <Counter>{totalCopiesToMonth}</Counter>
+          </Created>
+          <Done>
+            <p>Cópia no dia</p>
+            <Counter>{totalCopiesToDay}</Counter>
+            <div>
               <Report>
                 <FileXls size={22} />
               </Report>
-            </Done>
-          </Info>
+              <Link href="/departments">
+                <Buildings size={22} />
+              </Link>
+            </div>
+          </Done>
+        </Info>
 
-          <TaskList>
-            {copies.map((copie) => {
-              return (
-                <Box key={copie.id}>
-                  <Task>
+        <TaskList>
+          {copies.map((copie) => {
+            return (
+              <Box key={copie.id}>
+                <Task>
+                  <div>
+                    {format(new Date(copie.created_at), 'dd/MM/yyyy hh:mm')}
                     <div>
-                      {format(new Date(copie.created_at), 'dd/MM/yyyy hh:mm')}
+                      {copie.departments.corporateName
+                        ? copie.departments.corporateName
+                        : copie.departments.name}
                     </div>
-                    <div>{copie.sector}</div>
-                    <div>
-                      {copie.nCopies > 1
-                        ? `${copie.nCopies} cópias`
-                        : `${copie.nCopies} cópia`}
-                    </div>
-                  </Task>
-                  <AlertDialogDeleteCopie
-                    id={copie.id}
-                    fetchCopies={fetchCopies}
-                  >
-                    <div>
-                      <TrashSimple size={20} />
-                    </div>
-                  </AlertDialogDeleteCopie>
-                </Box>
-              )
-            })}
-          </TaskList>
-        </Tasks>
+                  </div>
 
-        {/* <Pagination
+                  <div>
+                    {copie.nCopies > 1
+                      ? `${copie.nCopies} cópias`
+                      : `${copie.nCopies} cópia`}
+                  </div>
+                </Task>
+                <AlertDialogDelete
+                  id={copie.id}
+                  fetch={fetchCopies}
+                  url="DeleteCopie"
+                >
+                  <div>
+                    <TrashSimple size={20} />
+                  </div>
+                </AlertDialogDelete>
+              </Box>
+            )
+          })}
+        </TaskList>
+      </Tasks>
+
+      {/* <Pagination
           totalCountOfRegisters={100}
           currentPage={page}
           onPageChange={setPage}
         /> */}
-      </Container>
-
-      <Toaster />
     </>
   )
 }

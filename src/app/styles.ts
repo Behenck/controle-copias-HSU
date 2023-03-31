@@ -83,6 +83,39 @@ export const Done = styled.div`
   p {
     color: ${(props) => props.theme['purple-500']};
   }
+
+  div {
+    display: flex;
+    gap: 0.275rem;
+    align-items: center;
+    justify-content: center;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        color: ${(props) => props.theme['gray-300']};
+        transition: all 0.2s;
+
+        &:hover {
+          color: ${(props) => props.theme['gray-200']};
+        }
+      }
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+
+      color: ${(props) => props.theme['gray-300']};
+      transition: all 0.2s;
+    }
+  }
 `
 
 export const TaskList = styled.div`
@@ -132,6 +165,13 @@ export const Task = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  div {
+    &:first-child {
+      display: flex;
+      gap: 2rem;
+    }
+  }
 `
 
 export const Box = styled.div`

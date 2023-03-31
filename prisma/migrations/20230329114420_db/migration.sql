@@ -3,8 +3,8 @@ CREATE TABLE "copies" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "nCopies" INTEGER NOT NULL,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "departmentsId" TEXT NOT NULL,
-    CONSTRAINT "copies_departmentsId_fkey" FOREIGN KEY ("departmentsId") REFERENCES "departments" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "departmentId" TEXT NOT NULL,
+    CONSTRAINT "copies_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "departments" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable

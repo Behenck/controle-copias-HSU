@@ -12,24 +12,26 @@ import {
   Title,
 } from './styles'
 
-interface AlertDialogDeleteCopieProps {
+interface AlertDialogDeleteProps {
   id: string
+  url: string
   children: ReactNode
-  fetchCopies: () => void
+  fetch: () => void
 }
 
-export function AlertDialogDeleteCopie({
+export function AlertDialogDelete({
   children,
   id,
-  fetchCopies,
-}: AlertDialogDeleteCopieProps) {
+  fetch,
+  url,
+}: AlertDialogDeleteProps) {
   const [password, setPassword] = useState('')
 
-  async function handleDeleteCopie() {
+  async function handleDelete() {
     if (password === 'minhocagorda') {
       try {
-        await api.post('/DeleteCopie', { id })
-        fetchCopies()
+        await api.post(`/${url}`, { id })
+        fetch()
         toast.success('Registro excluído com sucesso')
       } catch (err) {
         console.log(err)
@@ -58,7 +60,7 @@ export function AlertDialogDeleteCopie({
           />
           <div>
             <Cancel>Cancelar</Cancel>
-            <ButtonAction type="button" onClick={handleDeleteCopie}>
+            <ButtonAction type="button" onClick={handleDelete}>
               Excluir
             </ButtonAction>
           </div>

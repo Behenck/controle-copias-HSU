@@ -21,8 +21,8 @@ export default async function handler(request, response) {
         gte: dateFirst,
       },
     },
-    orderBy: {
-      sector: 'asc',
+    include: {
+      departments: true,
     },
   })
 
@@ -31,7 +31,7 @@ export default async function handler(request, response) {
     let hasElement = false
     let j
     for (j = 0; j < result.length; j++) {
-      if (result[j].sector === i.sector) {
+      if (result[j].departments.code === i.departments.code) {
         hasElement = true
         break
       }
@@ -44,7 +44,8 @@ export default async function handler(request, response) {
   })
   const responseFormatted = result.map((res) => {
     return {
-      sector: res.sector,
+      date: format(new Date(dateLast), 'dd/MM/yyyy'),
+      code: String(res.departments.code),
       nCopies: String(res.nCopies),
     }
   })
@@ -53,7 +54,7 @@ export default async function handler(request, response) {
 
   const ws = wb.addWorksheet(`${month}-${year}`)
 
-  const titulos = ['Setor', 'Nº Cópias']
+  const titulos = ['DATA', 'CDC', 'VLRCDC/QTDE']
   let headingColumnIndex = 1
   titulos.forEach((titulo) => {
     ws.cell(1, headingColumnIndex++).string(titulo)
@@ -67,5 +68,5 @@ export default async function handler(request, response) {
     rowIndex++
   })
 
-  wb.write(`relatorio-copias-mensais-${month}-${year}.xlsx`, response)
+  wb.write(`relatorio-copias-mensais-${month}-${year}.xls`, response)
 }

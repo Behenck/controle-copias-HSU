@@ -5,14 +5,10 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const { nCopies, departmentId } = request.body
+  const { id } = request.body
 
-  await prisma.copies.create({
-    data: {
-      nCopies: Number(nCopies),
-      departmentId,
-      created_at: new Date(),
-    },
+  await prisma.departments.delete({
+    where: { id },
   })
 
   response.status(201).json({})

@@ -15,6 +15,9 @@ export default async function handler(
         created_at: 'desc',
       },
     ],
+    include: {
+      departments: true,
+    },
   })
 
   const dateFirst = new Date(

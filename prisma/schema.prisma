@@ -17,11 +17,11 @@ datasource db {
 }
 
 model copies {
-  id            String      @id @default(uuid())
-  nCopies       Int
-  created_at    DateTime    @default(now())
-  departmentsId String
-  deapartments  departments @relation(fields: [departmentsId], references: [id])
+  id           String      @id @default(uuid())
+  nCopies      Int
+  created_at   DateTime    @default(now())
+  departmentId String
+  departments  departments @relation(fields: [departmentId], references: [id])
 }
 
 model departments {

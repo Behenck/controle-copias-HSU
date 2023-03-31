@@ -5,13 +5,12 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const { nCopies, departmentId } = request.body
+  const { id, active } = request.body
 
-  await prisma.copies.create({
+  await prisma.departments.update({
+    where: { id },
     data: {
-      nCopies: Number(nCopies),
-      departmentId,
-      created_at: new Date(),
+      active: !active,
     },
   })
 
