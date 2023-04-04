@@ -1,16 +1,5 @@
 version: "3.9"
 services:
-  app:
-    container_name: control_copies
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - /usr/src/app
-    ports:
-      - '3340:3340'
-    depends_on:
-      - database-postgres
   database-postgres:
     image: postgres:latest
     container_name: database-postgres
@@ -24,5 +13,16 @@ services:
     volumes:
       - database-postgres:/var/lib/postgresql/data
     restart: unless-stopped
+  app:
+    container_name: control_copies
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/src/app
+    ports:
+      - '3340:3340'
+    depends_on:
+      - database-postgres
 volumes:
   database-postgres:
