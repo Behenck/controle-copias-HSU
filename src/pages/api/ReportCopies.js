@@ -25,7 +25,7 @@ export default async function handler(request, response) {
       departments: true,
     },
   })
-
+  /* eslint-disable */
   const result = []
   responseCopies.filter((i) => {
     let hasElement = false
