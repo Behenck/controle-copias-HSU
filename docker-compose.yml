@@ -9,12 +9,12 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: control_copies
+      POSTGRES_DB: controlcopies
     volumes:
       - database-postgres:/var/lib/postgresql/data
     restart: unless-stopped
   app:
-    container_name: control_copies
+    container_name: control_copies_next13
     build:
       context: .
       dockerfile: Dockerfile
