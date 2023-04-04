@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3340",
     "dev:createCDCs": "tsx ./prisma/createCDCs.ts",
+    "generate": "npx prisma generate deploy",
+    "start:generate": "npm run generate && next build && next start -p 3340",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

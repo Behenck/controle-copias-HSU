@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  app:
+    container_name: control-copies
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/src/app
+    ports:
+      - '3340:3340'
